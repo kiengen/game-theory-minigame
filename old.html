@@ -1,0 +1,863 @@
+<html>
+  <head>
+	<style>
+  	body   {position: flex; display: flex; flex: 1; width: 98vw; height: 99vh; flex-direction: column; background-color: #93c47d; font-family: Calibri; margin: 0; border: 1vw solid #4e5f74; border-bottom: 1vh solid #4e5f74; border-top: 0;}
+  	h1 	{color: white; font-family: verdana; text-align: center; padding: 10px;}
+  	h2 	{color: white; font-family: verdana; font-size: 15px; text-align: center; background-color: #4e5f74; margin: 4px; padding: 6px;}
+  	text   {color: #4e5f74}
+  	t1 	{color: white; font-family: calibri; font-size: 12px; margin: 1px;}
+  	drag   {border: 1px solid darkGray; font-family: calibri; cursor: move; background-color: gray; color: white; min-height: 18px; display: block; width: auto; min-width: 25px; position: relative; height: auto; padding-left: 4px;}
+  	hover  {border: 1px solid darkGray; font-family: calibri; font-size: 12px; background-color: lightGray; min-width: 50px; min-height: 15px; position: relative; margin: 4px; padding-left: 10px; padding-right: 10px;}
+  	select {font-family: calibri; font-size: 12px; height: 18px;}
+  	input  {font-family: calibri; font-size: 12px; height: 18px;}
+	</style>
+  </head>
+
+  <!-- HEADER -->
+  <div style="background-color: #4e5f74;">
+	<h1>CONCLUDLE</h1>
+  </div>
+
+  <text id="debug"></text>
+
+  <!-- INSTRUCTIONS SCREEN -->
+  <div id="content">
+	<div style="color: #4e5f74; font-family: calibri; font-size: 15px; padding: 10px; margin: 10px; background-color: lightGray; border: 2px solid gray">
+  	<b>Introduction:</b>
+  	<br>
+  	<text style="text-align: left;">The prisoner's dilemma is a hypothetical scenario in which two criminals (say, Bob and Alice) are caught for a crime and interrogated separately. The police have no proof, and so are seeking a confession. If Bob fesses up, and Alice does not, he serves no jail time and Alice is sentenced for 10 years. The same is true for Alice. If both confess, they both go to jail but for 5 years. If neither confesses, neither one goes to jail. Ideally, neither one confesses. However, they have no way of knowing that their partner will not rat them out...</text>
+	</div>
+	<center>
+  	<button id="start_button" onClick="onStartButtonClick()" style="background-color: lightGray; font-family: calibri; color: #4e5f74; border: 2px solid gray; text-align: center; transition-duration: 0.4s; cursor: pointer; padding: 5px; font-size: 17px">START</button>
+	</center>
+  </div>
+
+  <!-- INTRODUCTION TO PRISONER'S DILEMMA -->
+  <div id="game_box" style="display: none">
+	<text id="game_box_top_text" style="color: #4e5f74; margin: 20px; display: block; white-space: pre-wrap;">Let's try it out! Instead of being in jail, however, let's say that you're just trying to earn as much money as possible. A box has $4 in it. You can choose to take nothing, $1, $2, $3, or $4. But another person is also taking from the box, and if, in total, you both try to take more than $4, neither one of you gets anything. You will play 5 rounds (as much as $4 can be taken out EACH ROUND).
+	</text>
+	<center>
+  	<div id="num_button_box" style="margin: 10px; margin-top: 0;">
+    	<text>Take your pick!</text><br><br>
+    	<button onClick="numberPress(0)">$0</button>
+    	<button onClick="numberPress(1)">$1</button>
+    	<button onClick="numberPress(2)">$2</button>
+    	<button onClick="numberPress(3)">$3</button>
+    	<button onClick="numberPress(4)">$4</button>
+    	<button id="num-five-button" onClick="numberPress(5)" style="display: none;">$5</button>
+  	</div>
+  	<br>
+  	<text id="player_choices" style="white-space: break-spaces;"></text>
+  	<button id="cont-button-1" onClick="continueButton1()" style="display: none; margin: 10px">Continue</button>
+	</center>
+  </div>
+
+  <!-- CUSTOMIZABLE PLAYER SCREEN -->
+  <div id="make_your_own" style="display: none; margin: 20px; margin-top: 0px; background-color: lightGray; border: 2px solid #4e5f74; white-space: nowrap">
+	<div id="blocks" style="width: 33%; padding: 10px; background-color: gray; flex-direction: column; display: flex;">
+  	<h2>Variables</h2>
+  	<t1>Preset</t1>
+  	<button onClick="addPiece('round')">round</button>
+    	<drag id="round" draggable="true" style="display: none;" data-is="var" data-block="round">round</drag>
+  	<button onClick="addPiece('turn')">turn</button>
+    	<drag id="turn" draggable="true" style="display: none;" data-is="var" data-block="turn">turn</drag>
+  	<t1><i>(Game is 50 rounds of 20 turns each.)</i></t1>
+  	<button id="oppMoveButton" onClick="addPiece('oppMove')">opp move</button>
+    	<drag id="oppMove" draggable="true" style="display: none;" data-is="var" data-block="oppMove">opp move</drag>
+  	<br>
+  	<t1>Custom</t1>
+  	<button id="var1button" onClick="addPiece('var1')" style="display: none;">NULL</button>
+    	<drag id="var1" draggable="true" style="display: none;" data-is="var" data-block="var1"></drag>
+  	<button onClick="addPiece('custom_var')">add custom variable</button>
+  	<input id="customvarname" type="text">
+  	<button onClick="addPiece('set')">set variable</button>
+    	<drag id="set" draggable="true" style="display: none;" data-is="func" data-block="set">
+      	<t1>Set</t1>
+      	<hover class="droptarget" data-accepts="cvar"></hover>
+      	<t1>to</t1>
+      	<hover class="droptarget" data-accepts="var"></hover>
+      	<br>
+      	<t1>then</t1>
+      	<br>
+      	<hover class="droptarget" data-accepts="func"></hover>
+    	</drag>
+
+  	<br>
+  	<h2>Logic</h2>
+  	<button onClick="addPiece('if')">if statement</button>
+    	<drag id="if" draggable="true" style="display: none;" data-is="func" data-block="if">
+      	<div>
+        	<t1>If</t1>
+        	<hover class="droptarget" data-accepts="var" style="max-height: 20px;"></hover>
+        	<t1>, do</t1>
+        	<hover class="droptarget" data-accepts="func"></hover>
+      	</div>
+      	<t1>otherwise</t1>
+      	<br>
+      	<hover class="droptarget" data-accepts="func"></hover>
+    	</drag>
+  	<button onClick="addPiece('comparison')">comparison</button>
+    	<drag id="comparison" draggable="true" data-is="var" data-block="comparison" style="display: none;">
+      	<hover class="droptarget" data-accepts="var" style="min-width: 20px;"></hover>
+      	<select style="max-height: 20px;">
+        	<option value="equals">=</option>
+        	<option value="greaterThan">&gt;</option>
+        	<option value="lessThan">&lt;</option>
+        	<option value="notEquals">not</option>
+      	</select>
+      	<hover class="droptarget" data-accepts="var" style="min-width: 20px;"></hover>
+    	</drag>
+  	<button onClick="addPiece('bool-op')">boolean operator</button>
+    	<drag id="bool-op" draggable="true" data-is="var" data-block="bool-op" style="display: none;">
+      	<hover class="droptarget" data-accepts="var" style="min-width: 20px;"></hover>
+      	<select>
+        	<option value="and">and</option>
+        	<option value="or">or</option>
+      	</select>
+      	<hover class="droptarget" data-accepts="var" style="min-width: 20px;"></hover>
+    	</drag>
+  	<button onClick="addPiece('bool')">boolean</button>
+    	<drag id="bool" draggable="true" data-is="var" data-block="bool" style="display: none;">
+      	<select>
+        	<option value="true">true</option>
+        	<option value="false">false</option>
+      	</select>
+    	</drag>
+
+  	<br>
+  	<h2>Math</h2>
+  	<button onClick="addPiece('math')">math</button>
+    	<drag id="math" draggable="true" style="display: none;" data-is="var" data-block="math">
+      	<hover class="droptarget" data-accepts="var"></hover>
+        	<select>
+          	<option value="plus">+</option>
+          	<option value="minus">-</option>
+          	<option value="multiply">x</option>
+          	<option value="divide">÷</option>
+        	</select>
+      	<hover class="droptarget" data-accepts="var"></hover>
+    	</drag>
+  	<button onClick="addPiece('num')">number</button>
+    	<drag id="num" draggable="true" style="display: none;" data-is="var" data-block="num">
+      	<t1>#</t1>
+      	<input type="tel" id="customnum" style="width: 25px;" min="-99" max="99" placeholder="num">
+    	</drag>
+  	<button onClick="addPiece('randnum')">random number</button>
+    	<drag id="randnum" draggable="true" style="display: none;" data-is="var" data-block="randnum">
+      	<t1>random # from</t1>
+      	<input type="tel" id="customnum" style="width: 25px;" min="-99" max="99" placeholder="num">
+      	<t1>to</t1>
+      	<input type="tel" id="customnum" style="width: 25px;" min="-99" max="99" placeholder="num">
+    	</drag>
+ 	 
+  	<br>
+  	<h2>Game</h2>
+  	<button onClick="addPiece('submit')">submit number</button>
+    	<drag id="submit" draggable="true" style="display: none;" data-is="func" data-block="submit">
+      	<t1>submit</t1>
+      	<hover class="droptarget" data-accepts="var"></hover>
+    	</drag>
+  	<br>
+  	<div style="flex-direction: row; display: flex;">
+    	<button onClick="parseBlocks(document.getElementById('playerbotcode').children[0], 0, 0, 0, 0)">test</button>
+    	<button onClick="runGame()">play</button>
+    	<select id="opponent_select" multiple=true style="flex-grow: 1; height: auto;">
+      	<option value="nice">nice bot</option>
+      	<option value="rude">rude bot</option>
+      	<option value="copycat">copycat</option>
+      	<option value="kittycat">kittycat</option>
+      	<option value="random">random bot</option>
+      	<option value="simple">simple bot</option>
+      	<option value="Kiersten">Kiersten's bot</option>
+    	</select>
+  	</div>
+ 	 
+	</div>
+	<div id="code-space" style="width: 67%; padding: 10px; overflow: scroll; display: block;">
+  	<blockbox style="margin: 2px; padding: 4px; background-color: #4e5f74; display: inline-block; font-size: 15px; font-family: verdana; color: white;">
+    	<blockboxtext style="font-size: 14px; font-family: verdana; font-weight: bold; padding: 15px 40px; color: white;">Blocks</blockboxtext><br>
+    	<blockbox class="droptarget" style="margin: 2px; display: inline-block;" data-accepts="all"></blockbox>
+  	</blockbox>
+  	<br><br>
+  	<drag style="cursor: default;">
+    	<t1>Play turn</t1>
+  	</drag>
+  	<hover id="playerbotcode" class="droptarget" data-accepts="func"></hover>
+	</div>
+  </div>
+
+
+
+  <script>
+	let player_choice = [];
+	let player_sum = [0, 0, 0];
+	let opp_choice = [];
+	let opp_sum = 0;
+	let round = 0;
+
+	const debugtext = document.getElementById("debug").innerText;
+
+	function onStartButtonClick() {
+  	document.getElementById("content").remove();
+  	document.getElementById("game_box").style.display = "initial";
+	}
+
+	// Only used in instructional rounds. First round always cooperates, second always cheats, third is copycat
+	function numberPress(num) {
+  	switch(round) {
+    	case 0:
+      	opp_choice.push(2);
+      	break;
+    	case 1:
+      	opp_choice.push(3);
+      	break;
+    	case 2:
+      	if(player_choice.length > 0) {
+        	opp_choice.push(player_choice[player_choice.length - 1]);
+      	}
+      	else {
+        	opp_choice.push(Math.floor(Math.random() * 2) + 2);
+      	}
+      	break;
+    	default: {}
+  	}
+  	if((round == 0 && num + opp_choice[opp_choice.length - 1] <= 4) || (round > 0 && num + opp_choice[opp_choice.length - 1] <= 5)) {
+    	player_sum[round] += num;
+  	}
+  	document.getElementById("player_choices").innerText += "You picked $" + num + ".\tYour opponent picked $" + opp_choice[opp_choice.length - 1] + ".\t\t(Select a number again)\n";
+  	player_choice.push(num);
+
+  	// checks if round is done + handles new round.
+  	if(opp_choice.length == 5) {
+    	document.getElementById("num_button_box").style.display = "none";
+    	document.getElementById("player_choices").innerText += "\n\nIn total, you earned $" + player_sum[round] + ".";
+    	document.getElementById("cont-button-1").style.display = "initial";
+  	}
+	}
+
+	function continueButton1() {
+  	if(round < 2) {
+    	document.getElementById("num_button_box").style.display = "initial";
+    	document.getElementById("cont-button-1").style.display = "none";
+  	}
+  	if(round == 0) {
+    	document.getElementById("game_box_top_text").innerText = "Now let's make it a bit more interesting... Say there is $5 in the box. You will have to pick whether you want to be nice or mean the first round, because you can't split it evenly.";
+    	document.getElementById("num-five-button").style.display = "initial";
+  	}
+  	else if(round == 1) {
+    	document.getElementById("game_box_top_text").innerText = "Other people can take advantage of your kindness! If they take an aggressive approach, you have no choice but to either accept a lower score or not cooperate to ensure that you both get a low score. Let's try one more round.";
+  	}
+  	else if(round == 2) {
+    	document.getElementById("game_box_top_text").innerText = "Did you realize that the last player was copying your moves? In such a scenario, that is the only way for both players to share the money. So who would win out the three players? The nice player (who plays a 2 every time), the mean player (who plays a 3 every time), or the copycat? Let's try letting each of them play each of them play against the others, as well as themselves.";
+  	}
+  	else if(round == 3) {
+    	document.getElementById("game_box_top_text").innerText = "NICE GUY VS. NICE GUY:\n";
+    	for(let i = 0; i < 5; i++) {
+      	document.getElementById("game_box_top_text").innerText += "\nNice guy1 played a 2.\t\tNice guy2 played a 2.";
+    	}
+    	document.getElementById("game_box_top_text").innerText += "\n\nNice guy1 earned 10.\t\tNice guy2 earned 10.";
+  	}
+  	else if(round == 4) {
+    	document.getElementById("game_box_top_text").innerText = "NICE GUY VS. NICE GUY: 10 and 10\t\tNICE GUY VS. MEAN GUY:\n";
+    	for(let i = 0; i < 5; i++) {
+      	document.getElementById("game_box_top_text").innerText += "\nNice guy played a 2.\t\tMean guy played a 3.";
+    	}
+    	document.getElementById("game_box_top_text").innerText += "\n\nNice guy earned 10.\t\tMean guy earned 15.";
+  	}
+  	else if(round == 5) {
+    	document.getElementById("game_box_top_text").innerText = "NICE GUY VS. NICE GUY: 10 and 10\t\tNICE GUY VS. MEAN GUY: 10 and 15\t\tNICE GUY VS. COPYCAT:\n";
+    	document.getElementById("game_box_top_text").innerText += "\nNice guy played a 2.\t\tCopycat played a 2/3. (50/50 chance of 2 or 3)";
+    	for(let i = 1; i < 5; i++) {
+      	document.getElementById("game_box_top_text").innerText += "\nNice guy played a 2.\t\tCopycat played a 2.";
+    	}
+    	document.getElementById("game_box_top_text").innerText += "\n\nNice guy earned 10.\t\tCopycat earned 10/11.";
+  	}
+  	else if(round == 6) {
+    	document.getElementById("game_box_top_text").innerText = "NICE GUY VS. NICE GUY: 10 and 10\t\tNICE GUY VS. MEAN GUY: 10 and 15\t\tNICE GUY VS. COPYCAT: 10 and 10/11\n\t\t\t\t\t\t\t\t\tMEAN GUY VS. MEAN GUY:\n";
+    	for(let i = 0; i < 5; i++) {
+      	document.getElementById("game_box_top_text").innerText += "\nMean guy1 played a 3.\t\tMean guy2 played a 3";
+    	}
+    	document.getElementById("game_box_top_text").innerText += "\n\nMean guy1 earned 0.\t\t\tMean guy2 earned a 0.";
+  	}
+  	else if(round == 7) {
+    	document.getElementById("game_box_top_text").innerText = "NICE GUY VS. NICE GUY: 10 and 10\t\tNICE GUY VS. MEAN GUY: 10 and 15\t\tNICE GUY VS. COPYCAT: 10 and 10/11\n\t\t\t\t\t\t\t\t\tMEAN GUY VS. MEAN GUY: 0 and 0\t\t\tMEAN GUY VS. COPYCAT:\n";
+    	for(let i = 0; i < 5; i++) {
+      	if(i == 0) {
+        	document.getElementById("game_box_top_text").innerText += "\nMean guy played a 3.\t\tCopycat played a 2/3 (50/50 chance of 2 or 3).";
+      	}
+      	else {
+        	document.getElementById("game_box_top_text").innerText += "\nMean guy played a 3.\t\tCopycat played a 3.";
+      	}
+    	}
+    	document.getElementById("game_box_top_text").innerText += "\n\nMean guy earned 0/3.\tCopycat earned a 0/2.";
+  	}
+  	else if(round == 8) {
+    	document.getElementById("game_box_top_text").innerText = "NICE GUY VS. NICE GUY: 10 and 10\t\tNICE GUY VS. MEAN GUY: 10 and 15\t\tNICE GUY VS. COPYCAT: 10 and 10/11\n\t\t\t\t\t\t\t\t\tMEAN GUY VS. MEAN GUY: 0 and 0\t\t\tMEAN GUY VS. COPYCAT: 0/3 and 0/2\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\tCOPYCAT VS. COPYCAT:\n\nThere are three possibilities. Since both have a 50/50 chance of playing a two or three the first round, either:\n  - they both play 2, and continue to play 2 (25%)\n  - one plays a two and one plays a three (50%)\n  - they both play 3, and continue to play 3 (25%)\n\nIf they both play twos, they both get 10 points.\nIf one plays two and the other plays three, one gets 12 and the other gets 13.\nIf they both play threes, neither gets anything.\n\nSo, it's a bit more complicated. But half the time they get ~12.5, a quarter of the time they get 0, and the remaining quarter of the time they get 10. So we'll say they get (12.5 + 12.5 + 0 + 10) / 4, or 8.75, each.";
+  	}
+  	else if(round == 9) {
+    	document.getElementById("game_box_top_text").innerText = "NICE GUY VS. NICE GUY: 10 and 10\t\tNICE GUY VS. MEAN GUY: 10 and 15\t\tNICE GUY VS. COPYCAT: 10 and 10/11\n\t\t\t\t\t\t\t\t\tMEAN GUY VS. MEAN GUY: 0 and 0\t\t\tMEAN GUY VS. COPYCAT: 0/3 and 0/2\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\tCOPYCAT VS. COPYCAT: 8.75 and 8.75\n\nIn total:\n\nTeam 'nice guy' wins 10+10+0+10 = 30\nTeam 'mean guy' wins 15+0+0+1.5 (50% chance of 3 or 0) = 16.5\nTeam 'copycat' wins 10.5 (50% chance of 10 or 11) + 1 (50% chance of 0 or 2) + 8.75 + 8.75 = 29\n\nSo the nice guys win! But, strategically speaking, since the ideal way to play is to trade such that the sum of a turn is 5 (e.g. 2 and 3 or 4 and 1), a player should be aiming to win 12.5 (25/2) every round. And if a player (like the nice guy) is only playing low numbers, their opponent can earn more points by taking advantage of that fact.";
+  	}
+  	else if(round == 10) {
+    	document.getElementById("game_box_top_text").innerText = "With that in mind, it's your turn! Make your own bot to compete against these three bots (and my own bot!)";
+    	player_sum = 0;
+  	}
+  	else {
+    	document.getElementById("game_box").style.display = "none";
+    	document.getElementById("make_your_own").style.display = "flex";
+  	}
+  	document.getElementById("player_choices").innerText = "\n";
+  	player_choice = [];
+  	opp_choice = [];
+  	round++;
+	}
+
+  // draggable stuff
+  let dragged;
+  document.addEventListener("dragstart", function(event) {
+	event.dataTransfer.setData("Text", event.target.id);
+	event.target.style.border = "1px solid darkGray";
+	event.target.style.margin = "2px";
+	event.target.parentElement.style.padding = "3px";
+  });
+  document.addEventListener("drag", function(event) { dragged = event.target; });
+  document.addEventListener("dragover", function(event) {
+	event.preventDefault();
+	if(event.target.className == "droptarget") {
+  	event.target.style.backgroundColor = "white";
+	}
+  });
+  document.addEventListener("dragleave", function(event) {
+	event.preventDefault();
+	if(event.target.className == "droptarget") {
+  	event.target.style.backgroundColor = "lightGray";
+	}
+  });
+  document.addEventListener("drop", function(event) {
+	event.preventDefault();
+	if(event.target.className == "droptarget" && (event.target.children.length < 1 || event.target.dataset.accepts == 'all')) {
+  	if(event.target.dataset.accepts == dragged.dataset.is || event.target.dataset.accepts == 'all' || event.target.dataset.accepts == "cvar" && dragged.dataset.block.includes("var")) {
+    	const data = event.dataTransfer.getData("Text");
+    	dragged.style.border = "0";
+    	dragged.style.margin = "0";
+    	event.target.style.padding = "0";
+    	event.target.appendChild(dragged);
+    	event.target.style.backgroundColor = "lightGray";
+  	}
+  	else {
+    	debug.innerText = "Wrong type! That box requires '"+event.target.dataset.accepts+"', not '"+dragged.dataset.is+"'.";
+    	event.target.style.backgroundColor = "lightGray";
+  	}
+	}
+  });
+
+  let var_names = [];
+  function addPiece(type) {
+	if(type == "custom_var") {
+  	let tempName = document.getElementById("customvarname").value;
+  	if(var_names.length >= 12) {
+    	debug.innerText = "Max variables reached.";
+  	}
+  	else if(tempName == "" || tempName == null) {
+    	debug.innerText = "Custom variable name cannot be blank.";
+  	}
+  	else if(var_names.includes(tempName)) {
+    	debug.innerText = "Variable '" + tempName + "' already exists.";
+  	}
+  	else {
+    	if(var_names.length == 0) {
+      	document.getElementById("var1button").innerText = tempName;
+      	document.getElementById("var1button").style.display = "inline-block";
+    	}
+    	else {
+      	let button = document.getElementById("var1button").cloneNode(true);
+      	button.setAttribute("id", "var"+(var_names.length+1)+"button");
+      	let variable = document.getElementById("var1").cloneNode(true);
+      	variable.setAttribute("id", "var"+(var_names.length+1));
+      	variable.dataset.block = variable.getAttribute("id");
+    	}
+    	document.getElementById("var"+(var_names.length+1)).innerText = tempName;
+    	var_names.push(tempName);
+  	}
+	}
+	else {
+  	let piece = document.getElementById(type).cloneNode(true);
+  	piece.style.display = "inline-block";
+  	piece.setAttribute("id", "");
+  	document.getElementById("code-space").children[0].children[2].appendChild(piece);
+	}
+  }
+ 
+  // actually playing the game!
+  let custom_vars = [[null, null, null, null, null, null, null, null, null, null, null], [null, null, null, null, null, null, null, null, null, null, null]];
+  function parseBlocks(block, round, turn, oppPrev, p) {
+	if(turn == 0) {
+  	custom_vars = [[null, null, null, null, null, null, null, null, null, null, null], [null, null, null, null, null, null, null, null, null, null, null]];
+	}
+
+	// handles if
+	if(block.dataset.block == "if") {
+  	if(parseBlocks(block.children[0].children[1].children[0], round, turn, oppPrev, p)) {
+    	return parseBlocks(block.children[0].children[3].children[0], round, turn, oppPrev, p);
+  	}
+  	else {
+    	return parseBlocks(block.children[3].children[0], round, turn, oppPrev, p);
+  	}
+	}
+
+	// handles round
+	else if(block.dataset.block == "round") {
+  	return round;
+	}
+
+	// handles turn
+	else if(block.dataset.block == "turn") {
+  	return turn;
+	}
+
+	// handles oppMove
+	else if(block.dataset.block == "oppMove") {
+  	return oppPrev;
+	}
+    
+	// handles custom variables
+	else if(block.dataset.block.includes("var")) {
+  	let index = parseInt(block.dataset.block.substring(3));
+  	return custom_vars[p][index-1];
+	}
+    
+	// handles setters
+	else if(block.dataset.block == "set") {
+  	let index = parseInt(block.dataset.children[1].children[0].block.substring(3));
+  	let new_val = parseBlocks(block.dataset.children[3].children[0], round, turn, oppPrev, p);
+  	custom_vars[p][index-1] = new_val;
+  	return parseBlocks(block.dataset.children[7].children[0], round, turn, oppPrev, p);
+	}
+    
+	// handles comparisons
+	else if(block.dataset.block == "comparison") {
+  	const var1 = parseBlocks(block.children[0].children[0], round, turn, oppPrev, p);
+  	const var2 = parseBlocks(block.children[2].children[0], round, turn, oppPrev, p);
+  	switch(block.children[1].value) {
+    	// =
+    	case "equals":
+      	return var1 == var2;
+      	break;
+    	// >
+    	case "greaterThan":
+      	return var1 > var2;
+      	break;
+    	// <
+    	case "lessThan":
+      	return var1 < var2;
+      	break;
+    	// not
+    	case "notEquals":
+      	return var1 != var2;
+      	break;
+    	default:
+      	block.style.backgroundColor = "red";
+  	}
+	}
+    
+	// handles boolean operators
+	else if(block.dataset.block == "bool-op") {
+  	const var1 = parseBlocks(block.children[0].children[0], round, turn, oppPrev, p);
+  	const var2 = parseBlocks(block.children[2].children[0], round, turn, oppPrev, p);
+  	switch(block.children[1].value) {
+    	// or
+    	case "or":
+      	return var1 || var2;
+      	break;
+    	// and
+    	case "and":
+      	return var1 && var2;
+      	break;
+    	default:
+      	block.style.backgroundColor = "red";
+  	}
+	}
+    
+	// handles booleans
+	else if(block.dataset.block == "bool") {
+  	if(block.children[0].value == "true") {
+    	return true;
+  	}
+  	return false;
+	}
+    
+	// handles math
+	else if(block.dataset.block == "math") {
+  	const var1 = parseInt(block.children[0].value);
+  	const var2 = parseInt(block.children[2].value);
+  	switch(block.children[1].value) {
+    	// +
+    	case "plus":
+      	return var1 + var2;
+      	break;
+    	// -
+    	case "minus":
+      	return var1 - var2;
+      	break;
+    	// x
+    	case "multiply":
+      	return var1 * var2;
+      	break;
+    	// divide
+    	case "divide":
+      	return var1 / var2;
+      	break;
+    	default:
+      	block.style.backgroundColor = "red";
+  	}
+	}
+
+	// handles numbers
+	else if(block.dataset.block == "num") {
+  	return block.children[1].value;
+	}
+    
+	// handles random numbers
+	else if(block.dataset.block == "randnum") {
+  	return Math.random(Math.abs(block.children[3].value - block.children[1].value)+1) + Math.min(block.children[3].value, block.children[1].value);
+	}
+
+	// handles submit
+	else if(block.dataset.block == "submit") {
+  	let val = parseBlocks(block.children[1].children[0], round, turn, oppPrev, p);
+  	return val;
+	}
+    
+	else {
+  	debug.innerText = ("unexpected error: block not recognized");
+	}
+  }
+ 
+  // HANDLES THE LOGIC OF PLAYING THROUGH THE GAME
+  function runGame() {
+	player_choice = []; // --> p1
+	player_sum = 0; // --> p1
+	opp_choice = []; // --> p2
+	opp_sum = 0; // --> p2
+	let scores = {};
+	// adds chosen bots to list
+	let temp_names = [];
+	let names = [];
+	const opp_options = document.getElementById("opponent_select").children;
+	for(let i = 0; i < opp_options.length; i++) {
+  	if(opp_options[i].selected) {
+    	temp_names.push(opp_options[i].value);
+    	for(let j = 0; j < 5; j++) {
+      	names.push(temp_names[i]);
+    	}
+    	scores[temp_names[i]] = 0;
+  	}
+	}
+	// adds player to list
+	temp_names.push("player");
+	names.push("player");
+	names.push("player");
+	names.push("player");
+	names.push("player");
+	names.push("player");
+	scores["player"] = 0;
+    
+	let max;
+
+	// starts round
+	for(let l = 0; l < 50; l++) {
+  	let score_sum = 0;
+  	for(let j = 0; j < names.length-1; j++) { // p1
+    	for(let k = j+1; k < names.length; k++) { // p2
+      	for(let i = 0; i < 20; i++) {
+        	let p1move;
+        	switch(names[j]) {
+          	case "player":
+            	p1move = parseInt(parseBlocks(document.getElementById("playerbotcode").children[0], l, i, opp_choice[opp_choice.length - 1] ?? 2, 0));
+            	break;
+          	case "nice":
+            	p1move = 2;
+            	break;
+          	case "rude":
+            	p1move = 3;
+            	break;
+          	case "copycat":
+            	p1move = playCopycat(i, opp_choice[opp_choice.length - 1] ?? 2);
+            	break;
+          	case "kittycat":
+            	p1move = playKittycat(i, opp_choice[opp_choice.length - 1] ?? 2);
+            	break;
+          	case "random":
+            	p1move = Math.floor(Math.random(5))+1;
+            	break;
+          	case "simple":
+            	p1move = playSimplebot(i, opp_choice[opp_choice.length - 1] ?? 2, 0);
+            	break;
+          	case "Kiersten":
+            	p1move = playMe(i, l, opp_choice[opp_choice.length - 1] ?? 2, 0);
+            	break;
+          	default:
+            	debug.innerText = ("Error: player 1 not recognized --> '" + names[j] + "'");
+            	return;
+        	}
+
+        	let p2move;
+        	switch(names[k]) {
+          	case "player":
+            	p2move = parseInt(parseBlocks(document.getElementById("playerbotcode").children[0], l, i, player_choice[player_choice.length - 1] ?? 2, 1));
+            	break;
+          	case "nice":
+            	p2move = 2;
+            	break;
+          	case "rude":
+            	p2move = 3;
+            	break;
+          	case "copycat":
+            	p2move = playCopycat(i, player_choice[player_choice.length - 1] ?? 2);
+            	break;
+          	case "kittycat":
+            	p2move = playKittycat(i, player_choice[player_choice.length - 1] ?? 2);
+            	break;
+          	case "random":
+            	p2move = Math.floor(Math.random(5))+1;
+            	break;
+          	case "simple":
+            	p2move = playSimplebot(i, player_choice[player_choice.length - 1] ?? 2, 1);
+            	break;
+          	case "Kiersten":
+            	p2move = playMe(i, l, player_choice[player_choice.length - 1] ?? 2, 1);
+            	break;
+          	default:
+            	debug.innerText = ("Error: player 2 not recognized --> '" + names[k] + "'");
+            	return;
+        	}
+        	player_choice.push(p1move);
+        	opp_choice.push(p2move);
+        	if((p1move + p2move) <= 5) {
+          	player_sum += p1move;
+          	opp_sum += p2move;
+        	}
+      	}
+      	scores[names[j]] += player_sum;
+      	scores[names[k]] += opp_sum;
+      	score_sum += player_sum;
+      	score_sum += opp_sum;
+      	player_choice = [];
+      	opp_choice = [];
+      	player_sum = 0;
+      	opp_sum = 0;
+    	}
+  	} // display results somewhere
+  	let str = "ROUND " + l + ":\n";
+ 	 
+  	let maxVal = 0;
+ 	 
+  	// does this work?
+  	names = [];
+  	for(let i = 0; i < temp_names.length; i++) {
+    	for(let j = 0; j < Math.round(scores[temp_names[i]]*100/score_sum); j++) {
+      	names.push(temp_names[i]);
+    	}
+    	if(scores[temp_names[i]]/score_sum > 0.9999) {
+      	debug.innerText = (temp_names[i] + " wins!");
+      	return;
+    	}
+    	if(temp_names[i] == "player") {
+      	str = str + "your bot";
+    	}
+    	else if(temp_names[i] == "Kiersten") {
+      	str = str + "me";
+    	}
+    	else {
+      	str = str + temp_names[i];
+    	}
+    	str = str + ": " + Math.round(scores[temp_names[i]]*10000/score_sum)/100 + "%, ";
+    	if(scores[temp_names[i]] > maxVal) {
+      	max = temp_names[i];
+      	maxVal = scores[temp_names[i]];
+    	}
+    	else if(scores[temp_names[i]] == maxVal) {
+      	max += ", " + temp_names[i];
+    	}
+    	scores[temp_names[i]] = 0;
+  	}
+  	debug.innerText = (str);
+	}
+	if(max.includes(",")) {
+  	debug.innerText = max + " win!";
+  	return;
+	}
+	debug.innerText = max + " wins!";
+  }
+ 
+  function playCopycat(turn, oppPrev) {
+	if(turn == 0) { return 2; }
+	else { return oppPrev; }
+  }
+ 
+  function playKittycat(turn, oppPrev) {
+	if(turn == 0) { return 2; }
+	else if(5 - oppPrev >= 3 && Math.random() < 0.5) { return 5-oppPrev; }
+	else { return oppPrev; }
+  }
+ 
+  let simplebot = [0, 0];
+  function playSimplebot(turn, oppPrev, p) {
+	if(turn == 0) { simplebot[p] = 3; return 3; }
+	else if(simplebot[p] + oppPrev > 5) {
+  	simplebot[p] -= Math.floor(Math.random(2));
+	}
+	else if(simplebot[p] + oppPrev < 5) {
+  	simplebot[p] += Math.floor(Math.random(2));
+	}
+	return simplebot[p];
+  }
+
+  // according to math, it seems like using a 5/6 prob of playing 2 maximizes score but 1/2 is optimal speed for self discovery. modify code?
+  // isMe, isCopycat, mySum, theirSum, myPrev, theirPrev, myPrev2, theirPrev2, myPrev3, theirPrev3, copyTurn
+  let my_vars = [[1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0], [1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0]];
+  function playMe(turn, round, oppPrev, p) {
+	let choice = 4;
+	if(turn == 0) {
+  	if(p == 0) {
+    	my_vars = [[1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0], [1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0]];
+  	}
+  	choice = Math.floor(Math.random()*2)+2;
+	}
+	else {
+  	my_vars[p][9] = my_vars[p][7]; // moves theirPrev2 to theirPrev3
+  	my_vars[p][7] = my_vars[p][5]; // moves theirPrev to theirPrev2
+  	my_vars[p][5] = oppPrev; // sets theirPrev as their last move
+  	if(my_vars[p][4] + my_vars[p][5] <= 5) {
+    	my_vars[p][2] += my_vars[p][4]; // adds myPrev to mySum
+    	my_vars[p][3] += my_vars[p][5]; // adds theirPrev to theirSum
+  	}
+
+  	// if ever they differ from my last play, they aren't a copycat
+  	if(my_vars[p][1] && turn > 1 && my_vars[p][5] != my_vars[p][6]) {
+    	my_vars[p][1] = 0;
+  	}
+
+  	// CHECK TO ENSURE THEY'RE MY BOT
+  	if(my_vars[p][0]) { // if they're my bot
+    	// ...but we've only lined up and they didn't play a three or two
+    	if(my_vars[p][2] - my_vars[p][4] == my_vars[p][3] - my_vars[p][5] && (turn <= 1 || my_vars[p][6] == my_vars[p][7]) && (turn <= 2 || my_vars[p][8] == my_vars[p][9]) && !(my_vars[p][5] == 2 || my_vars[p][5] == 3)) {
+      	my_vars[p][0] = 0; // not one of my bots, clearly
+    	}
+
+    	// ...but our scores didn't add up to 5, despite doing so last time
+    	else if((turn > 1 && my_vars[p][6] + my_vars[p][7] == 5) && my_vars[p][4] + my_vars[p][5] != 5) {
+      	my_vars[p][0] = 0; // not one of my bots, clearly
+    	}
+  	}
+
+  	// IF THEY'RE STILL MY BOT
+  	if(my_vars[p][0]) {
+    	// have we split up?
+    	if(my_vars[p][2] == my_vars[p][3] && my_vars[p][4] == my_vars[p][5] && (turn <= 2 || my_vars[p][8] == my_vars[p][9])) { // no
+      	if(round < 10) {
+        	choice = Math.floor(Math.random()*2)+2;
+      	}
+      	else if(Math.random() > 0.833) {
+        	choice = Math.floor(Math.random()*2)+2; // keep going till we split up
+      	}
+      	else {
+        	choice = 2;
+      	}
+    	}
+    	else { // yes
+      	if(turn % 10 == 7 && my_vars[p][9] != my_vars[p][8]) { // super check posers
+        	if(my_vars[p][9] > my_vars[p][8]) {
+          	choice = 4;
+        	}
+        	else if (my_vars[p][8] > my_vars[p][9]){
+          	choice = 1;
+        	}
+      	}
+      	else if(turn % 3 == 1 && my_vars[p][4] != my_vars[p][5]) { // we're equal and it's an odd turn number
+        	if(my_vars[p][4] > my_vars[p][5]) { // just for fun (to catch posers)
+          	choice = 3;
+        	}
+        	else if(my_vars[p][5] > my_vars[p][4]) {
+          	choice = 2;
+        	}
+      	}
+      	else if(my_vars[p][2] != my_vars[p][3]) { // if one has more
+        	let diff = my_vars[p][2] - my_vars[p][3];
+        	if(Math.abs(diff) > 5) {
+          	return 2.5 - (2.5 * Math.sign(diff)); // applies limits (0 <= c <= 5)
+        	}
+        	choice = 2.5 - (diff) / 2; // take fancy
+        	if(choice % 1 != 0) {
+          	if(choice > 2.5) {
+            	choice -= 0.5;
+          	}
+          	else {
+            	choice += 0.5;
+          	}
+        	}
+      	}
+      	else if(my_vars[p][3] > my_vars[p][2]) { // if I have less
+        	//choice = 3; // take more
+      	}
+      	else { // we're equal
+        	if(my_vars[p][4] > my_vars[p][5]) { // if I just took more
+          	choice = 2;
+        	}
+        	else {
+          	choice = 3;
+        	}
+      	}
+    	}
+  	}
+
+  	// they're not my bot... are they a copycat?
+  	else if(my_vars[p][1]) {
+    	if(round < 40) {
+      	if(my_vars[p][10] < 1) {
+        	my_vars[p][10] = turn;
+      	}
+      	if((turn-my_vars[p][10]) % 3 == 0) {
+        	choice = 5;
+      	}
+      	else if((turn-my_vars[p][10]) % 3 == 1) {
+        	choice = 1;
+      	}
+      	else {
+        	choice = 0;
+      	}
+    	}
+    	else {
+      	choice = 5;
+    	}
+  	}
+
+  	// if I'm losing by a lot
+  	else if(my_vars[p][3] - my_vars[p][2] > 9) {
+    	choice = 4;
+  	}
+
+  	// if they're playing the same thing <= 3
+  	else if(my_vars[p][5] == my_vars[p][7] && my_vars[p][7] == my_vars[p][9] && ((my_vars[p][5] < 3 && round < 10) || (my_vars[p][5] < 2 && round >= 10 && round <= 45) || (my_vars[p][5] < 1 && round > 45))) {
+    	choice = 5 - my_vars[p][5];
+  	}
+
+  	// originally I had a ton of other things in my bot but I don't feel like transcribing them. I also don't have an array with all the previous moves so I can't do some anyway
+  	else if(round < 5) {
+    	choice = 2;
+  	}
+ 
+  	else if(round < 10) {
+    	choice = 3;
+  	}
+ 	 
+  	else if(round > 45) {
+    	choice = 5;
+  	}
+	}
+	my_vars[p][8] = my_vars[p][6];
+	my_vars[p][6] = my_vars[p][4];
+	my_vars[p][4] = choice;
+	return choice;
+  }
+  </script>
+</html>
