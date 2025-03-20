@@ -15,11 +15,9 @@
 
 body {
   margin: 0;
+  padding: 0;
   display: flex;
   place-items: center;
-  min-width: 320px;
+  min-width: 100vw;
   min-height: 100vh;
-  --color-a: rgb(55, 50, 50);
-  --color-b: rgb(79, 136, 173);
-  --color-c: rgb(220, 220, 220);
 }
